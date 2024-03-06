@@ -269,17 +269,21 @@ module Vmpooler
 
     service_name += "-#{prefix}" unless prefix.empty?
 
-    if tracing_enabled.eql?('false')
-      puts "Exporting of traces has been disabled so the span processor has been se to a 'SpanExporter'"
-      span_processor = OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
-        OpenTelemetry::SDK::Trace::Export::SpanExporter.new
-      )
-    else
-      puts "Exporting of traces will be done over HTTP in binary Thrift format to #{tracing_jaeger_host}"
-      span_processor = OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
-        OpenTelemetry::Exporter::Jaeger::CollectorExporter.new(endpoint: tracing_jaeger_host)
-      )
-    end
+    # if tracing_enabled.eql?('false')
+    #   puts "Exporting of traces has been disabled so the span processor has been se to a 'SpanExporter'"
+    #   span_processor = OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
+    #     OpenTelemetry::SDK::Trace::Export::SpanExporter.new
+    #   )
+    # else
+    #   puts "Exporting of traces will be done over HTTP in binary Thrift format to #{tracing_jaeger_host}"
+    #   span_processor = OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
+    #     OpenTelemetry::Exporter::Jaeger::CollectorExporter.new(endpoint: tracing_jaeger_host)
+    #   )
+    # end
+
+    span_processor = OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
+      OpenTelemetry::Exporter::Jaeger::CollectorExporter.new(endpoint: tracing_jaeger_host)
+    ) if tracing_enabled.eql?('true')
 
     OpenTelemetry::SDK.configure do |c|
       c.use 'OpenTelemetry::Instrumentation::Sinatra'
