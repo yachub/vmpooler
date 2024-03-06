@@ -291,7 +291,7 @@ module Vmpooler
       c.use 'OpenTelemetry::Instrumentation::HttpClient'
       c.use 'OpenTelemetry::Instrumentation::Redis'
 
-      c.add_span_processor(span_processor)
+      c.add_span_processor(span_processor) if tracing_enabled.eql?('true')
 
       c.service_name = service_name
       c.service_version = version
